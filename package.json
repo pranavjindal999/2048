@@ -1,0 +1,33 @@
+{
+  "name": "2048",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Pranav Jindal <pranavjindal999@outlook.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "watch": "ts-node-dev --watch --inspect -- src/index.ts",
+    "test": "mocha -r ts-node/register test/**/*.spec.ts"
+  },
+  "dependencies": {
+    "@hapi/joi": "^17.1.0",
+    "@types/chai": "^4.2.9",
+    "@types/chalk": "^2.2.0",
+    "@types/hapi__joi": "^16.0.12",
+    "@types/lodash": "^4.14.149",
+    "@types/mocha": "^7.0.1",
+    "@types/node": "^13.7.4",
+    "@types/sinon": "^7.5.2",
+    "@types/sinon-chai": "^3.2.3",
+    "chai": "^4.2.0",
+    "chalk": "^3.0.0",
+    "lodash": "^4.17.15",
+    "mocha": "^7.0.1",
+    "readline-promise": "^1.0.4",
+    "sinon": "^9.0.0",
+    "sinon-chai": "^3.5.0",
+    "ts-node": "^8.6.2",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.8.2"
+  }
+}
