@@ -146,7 +146,7 @@ export class Board {
                 currentElement && forEveryNumberIn(upperRange, (xAgain) => {
                     const nextUpperElement = this.directionalBoard([xAgain, y], direction);
                     if(nextUpperElement === currentElement) {
-                        // seting currentElement as twice, and nullifying the nextUpperElement.
+                        // set-ing currentElement as twice, and nullifying the nextUpperElement.
                         this.directionalBoard([x, y], direction, 2 * currentElement);
                         this.directionalBoard([xAgain, y], direction, 0);
 
@@ -172,7 +172,7 @@ export class Board {
                 !currentElement && forEveryNumberIn(upperRange, (xAgain) => {
                     const nextUpperElement = this.directionalBoard([xAgain, y], direction);
                     if(nextUpperElement) {
-                         // seting currentElement as nextUpperElement, and nullifying the nextUpperElement.
+                         // set-ing currentElement as nextUpperElement, and nullifying the nextUpperElement.
                         this.directionalBoard([x, y], direction, nextUpperElement);
                         this.directionalBoard([xAgain, y], direction, 0);
                         // can early exit because move done

@@ -15,20 +15,20 @@ function forEveryNumberIn(
     callback: (iterationValue: number) => void | false
 ) {
     const iterationModifier = from >= to ? () => --from : () => ++from;
-    let iterartionPredicate!: () => boolean;
+    let iterationPredicate!: () => boolean;
     switch (true) {
         case from > to:
-            iterartionPredicate = () => from >= to;
+            iterationPredicate = () => from >= to;
             break;
         case from < to:
-            iterartionPredicate = () => from <= to;
+            iterationPredicate = () => from <= to;
             break;
         case from === to:
-            iterartionPredicate = () => from === to;
+            iterationPredicate = () => from === to;
             break;
     }
 
-    while(iterartionPredicate()) {
+    while(iterationPredicate()) {
         let returnValue = callback(from);
         if(returnValue === false) {
             return false;
