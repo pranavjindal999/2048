@@ -3,35 +3,49 @@ const readline = require('readline-promise').default;
 
 let rlp: any;
 
+export type IterationState = {
+    readonly from: number;
+    readonly to: number;
+    current: number;
+}
+
+export type IterationCallback = (iterationValue: IterationState) => void | 'break';
+
 /**
  *  Executes the callback for every number in range provided.
  *  To early terminate the loop, return false from callback.
  *
  * @param {[number, number]} [from, to] range of numbers to iterate (both numbers inclusive)
- * @param {((iterationValue: number) => void | false)} callback iteration function to call with current iteration value
+ * @param {IterationCallback} callback iteration function to call with iteration state
  */
 function forEveryNumberIn(
     [from, to]: [number, number],
-    callback: (iterationValue: number) => void | false
+    callback: IterationCallback
 ) {
-    const iterationModifier = from >= to ? () => --from : () => ++from;
+    const state: IterationState = {
+        from,
+        to,
+        current: from
+    }
+
+    const iterationModifier = from >= to ? () => --state.current : () => ++state.current;
     let iterationPredicate!: () => boolean;
     switch (true) {
         case from > to:
-            iterationPredicate = () => from >= to;
+            iterationPredicate = () => state.current >= to;
             break;
         case from < to:
-            iterationPredicate = () => from <= to;
+            iterationPredicate = () => state.current <= to;
             break;
         case from === to:
-            iterationPredicate = () => from === to;
+            iterationPredicate = () => state.current === to;
             break;
     }
 
     while(iterationPredicate()) {
-        let returnValue = callback(from);
-        if(returnValue === false) {
-            return false;
+        let returnValue = callback(state);
+        if(returnValue === "break") {
+            break;
         }
         iterationModifier();
     }

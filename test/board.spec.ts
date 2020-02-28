@@ -18,7 +18,7 @@ describe('Tests for Board', () => {
         let nonZeroCount = 0;
         forEveryNumberIn([0, 3], (x) => {
             forEveryNumberIn([0,3], (y) => {
-                boardInstance["board"][x][y] ? nonZeroCount++ : zeroCount++;
+                boardInstance["board"][x.current][y.current] ? nonZeroCount++ : zeroCount++;
             })
         })
 
