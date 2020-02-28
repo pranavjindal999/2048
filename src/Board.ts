@@ -155,6 +155,8 @@ export class Board {
                         if(config.winWhen === 2 * currentElement) {
                             this.isGameWon = true;
                         }
+                        //short circuit out loop
+                        x.current = xAgain.current;
                         // because merge successful, currentElement's merging can be terminated
                         return "break";
                     } else if(nextUpperElement) {
