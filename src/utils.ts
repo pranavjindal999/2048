@@ -1,11 +1,7 @@
 import Joi from "@hapi/joi";
 const readline = require('readline-promise').default;
 
-const rlp = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    terminal: true
-});
+let rlp: any;
 
 /**
  *  Executes the callback for every number in range provided.
@@ -49,6 +45,12 @@ function forEveryNumberIn(
  * @returns {Promise<any>}
  */
 async function readInput(question: string, validation: Joi.Schema = Joi.any()): Promise<any> {
+    rlp = rlp || readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+        terminal: true
+    });
+    
     const input = await rlp.questionAsync(question);
 
     const validationResult = validation.validate(input);

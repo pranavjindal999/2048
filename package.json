@@ -7,7 +7,7 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "watch": "ts-node-dev --watch --inspect -- src/index.ts",
-    "test": "mocha -r ts-node/register test/**/*.spec.ts"
+    "test": "nyc --reporter=html --reporter=text mocha -r ts-node/register test/**/*.spec.ts"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.0",
@@ -23,6 +23,7 @@
     "chalk": "^3.0.0",
     "lodash": "^4.17.15",
     "mocha": "^7.0.1",
+    "nyc": "^15.0.0",
     "readline-promise": "^1.0.4",
     "sinon": "^9.0.0",
     "sinon-chai": "^3.5.0",
