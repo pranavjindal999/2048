@@ -1,47 +1,66 @@
 import "./chaiSetup";
-import { forEveryNumberIn } from "../src/utils";
+import { forEveryNumberIn, IterationCallback } from "../src/utils";
 import { expect } from 'chai';
 import sinon from "sinon";
 
 describe('Tests for forEveryNumberIn', () => {
   it('should loop up correctly', () => {
-      const cb = sinon.spy();
-      forEveryNumberIn([1,3], cb);
-      expect(cb).to.have.been.calledWith(1);
-      expect(cb).to.have.been.calledWith(2);
-      expect(cb).to.have.been.calledWith(3);
-      expect(cb).to.have.been.calledThrice;
+      const iterationValues: number[] = [];
+      const cb : IterationCallback = (state) => {
+        iterationValues.push(state.current);
+      }
+      const cbSpy = sinon.spy(cb);
+      forEveryNumberIn([1,3], cbSpy);
+      expect(iterationValues).to.deep.equal([1,2,3]);
+      expect(cbSpy).to.have.been.calledThrice;
   });
 
   it('should loop down correctly', () => {
-    const cb = sinon.spy();
-    forEveryNumberIn([1,-1], cb);
-    expect(cb).to.have.been.calledWith(1);
-    expect(cb).to.have.been.calledWith(0);
-    expect(cb).to.have.been.calledWith(-1);
-    expect(cb).to.have.been.calledThrice;
+    const iterationValues: number[] = [];
+    const cb : IterationCallback = (state) => {
+      iterationValues.push(state.current);
+    }
+    const cbSpy = sinon.spy(cb);
+    forEveryNumberIn([1,-1], cbSpy);
+    expect(iterationValues).to.deep.equal([1,0,-1]);
+    expect(cbSpy).to.have.been.calledThrice;
   });
 
   it('should loop once correctly', () => {
-    const cb = sinon.spy();
-    forEveryNumberIn([1,1], cb);
-    expect(cb).to.have.been.calledOnceWithExactly(1);
+    const iterationValues: number[] = [];
+    const cb : IterationCallback = (state) => {
+      iterationValues.push(state.current);
+    }
+    const cbSpy = sinon.spy(cb);
+    forEveryNumberIn([1,1], cbSpy);
+    expect(iterationValues).to.deep.equal([1]);
+    expect(cbSpy).to.have.been.calledOnce;
   });
 
   it('should early exit', () => {
-    const cb = sinon.spy((value: number) => {
-      if(value === 1) {
-        return false;
+    const cb : IterationCallback = (state) => {
+      if(state.current === 1) {
+        return "break";
       }
-    });
+    }
+    const cbSpy = sinon.spy(cb);
 
-    forEveryNumberIn([0,2], cb);
-    expect(cb).to.have.been.calledTwice;
-    // should have return undefined when loop did not early exit
-    expect(cb).to.have.been.returned(undefined);
-    // should have return false when loop did early exit
-    expect(cb).to.have.been.returned(false);
-    // safe check for early exit
-    expect(cb).to.not.have.been.calledThrice;
+    forEveryNumberIn([0,2], cbSpy);
+    expect(cbSpy).to.have.been.calledTwice;
+    expect(cbSpy).to.not.have.been.calledThrice;
+  })
+
+  it('should skip loops if current is changed inside loop', () => {
+    const iterationValues: number[] = [];
+    const cb : IterationCallback = (state) => {
+      iterationValues.push(state.current);
+      if(state.current === 1) {
+        state.current = 5;
+      }
+    }
+    const cbSpy = sinon.spy(cb);
+
+    forEveryNumberIn([0,10], cbSpy);
+    expect(iterationValues).to.deep.equal([0,1,6,7,8,9,10]);
   })
 });

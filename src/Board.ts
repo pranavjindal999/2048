@@ -117,12 +117,12 @@ export class Board {
         let areTwoSameNumbersFound = false;
         forEveryNumberIn([0, this.maxIndex], x => {
             return forEveryNumberIn([0, this.maxIndex], y => {
-                const currentElement = this.board[x][y];
-                const rightElement = this.board[x][y+1];
-                const belowElement = this.board[x+1]?.[y];
+                const currentElement = this.board[x.current][y.current];
+                const rightElement = this.board[x.current][y.current+1];
+                const belowElement = this.board[x.current+1]?.[y.current];
                 if(!currentElement || currentElement === rightElement || currentElement === belowElement) {
                     areTwoSameNumbersFound = true;
-                    return false;
+                    return "break";
                 }
             })
         })
@@ -138,45 +138,51 @@ export class Board {
             // range is one less, because we do not need move/merge cycle for "TOP" row/column
             const tuple: PositionTuple = this.isDownOrRight(direction) ? [this.maxIndex, 1] : [0, this.maxIndex - 1];
             forEveryNumberIn(tuple, (x) => {
-                const currentElement = this.directionalBoard([x, y], direction);
+                const currentElement = this.directionalBoard([x.current, y.current], direction);
                 // from current to upper
-                const upperRange: PositionTuple = this.isDownOrRight(direction) ? [x-1, 0] : [x+1, this.maxIndex];
+                const upperRange: PositionTuple = this.isDownOrRight(direction) ? 
+                                                  [x.current-1, 0] : 
+                                                  [x.current+1, this.maxIndex];
                 
                 // if currentElement is present, try merging it with upper numbers
                 currentElement && forEveryNumberIn(upperRange, (xAgain) => {
-                    const nextUpperElement = this.directionalBoard([xAgain, y], direction);
+                    const nextUpperElement = this.directionalBoard([xAgain.current, y.current], direction);
                     if(nextUpperElement === currentElement) {
-                        // seting currentElement as twice, and nullifying the nextUpperElement.
-                        this.directionalBoard([x, y], direction, 2 * currentElement);
-                        this.directionalBoard([xAgain, y], direction, 0);
+                        // set-ing currentElement as twice, and nullifying the nextUpperElement.
+                        this.directionalBoard([x.current, y.current], direction, 2 * currentElement);
+                        this.directionalBoard([xAgain.current, y.current], direction, 0);
 
                         if(config.winWhen === 2 * currentElement) {
                             this.isGameWon = true;
                         }
+                        //short circuit out loop
+                        x.current = xAgain.current;
                         // because merge successful, currentElement's merging can be terminated
-                        return false;
+                        return "break";
                     } else if(nextUpperElement) {
                         // if nextUpperElement is there and not equal, then currentElement's merging can be terminated
-                        return false;
+                        return "break";
                     }
                 })
             })
 
             // move cycle for a row/column
             forEveryNumberIn(tuple, (x) => {
-                const currentElement = this.directionalBoard([x, y], direction);
+                const currentElement = this.directionalBoard([x.current, y.current], direction);
                  // from current to upper
-                const upperRange: PositionTuple = this.isDownOrRight(direction) ? [x-1, 0] : [x+1, this.maxIndex];
+                const upperRange: PositionTuple = this.isDownOrRight(direction) ? 
+                                                  [x.current-1, 0] :
+                                                  [x.current+1, this.maxIndex];
 
                 // if currentElement is zero, then only we need to find upper element to move down
                 !currentElement && forEveryNumberIn(upperRange, (xAgain) => {
-                    const nextUpperElement = this.directionalBoard([xAgain, y], direction);
+                    const nextUpperElement = this.directionalBoard([xAgain.current, y.current], direction);
                     if(nextUpperElement) {
-                         // seting currentElement as nextUpperElement, and nullifying the nextUpperElement.
-                        this.directionalBoard([x, y], direction, nextUpperElement);
-                        this.directionalBoard([xAgain, y], direction, 0);
+                         // set-ing currentElement as nextUpperElement, and nullifying the nextUpperElement.
+                        this.directionalBoard([x.current, y.current], direction, nextUpperElement);
+                        this.directionalBoard([xAgain.current, y.current], direction, 0);
                         // can early exit because move done
-                        return false;
+                        return "break";
                     }
                 })
             })

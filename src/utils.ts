@@ -1,41 +1,51 @@
 import Joi from "@hapi/joi";
 const readline = require('readline-promise').default;
 
-const rlp = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    terminal: true
-});
+let rlp: any;
+
+export type IterationState = {
+    readonly from: number;
+    readonly to: number;
+    current: number;
+}
+
+export type IterationCallback = (iterationValue: IterationState) => void | 'break';
 
 /**
  *  Executes the callback for every number in range provided.
  *  To early terminate the loop, return false from callback.
  *
  * @param {[number, number]} [from, to] range of numbers to iterate (both numbers inclusive)
- * @param {((iterationValue: number) => void | false)} callback iteration function to call with current iteration value
+ * @param {IterationCallback} callback iteration function to call with iteration state
  */
 function forEveryNumberIn(
     [from, to]: [number, number],
-    callback: (iterationValue: number) => void | false
+    callback: IterationCallback
 ) {
-    const iterationModifier = from >= to ? () => --from : () => ++from;
-    let iterartionPredicate!: () => boolean;
+    const state: IterationState = {
+        from,
+        to,
+        current: from
+    }
+
+    const iterationModifier = from >= to ? () => --state.current : () => ++state.current;
+    let iterationPredicate!: () => boolean;
     switch (true) {
         case from > to:
-            iterartionPredicate = () => from >= to;
+            iterationPredicate = () => state.current >= to;
             break;
         case from < to:
-            iterartionPredicate = () => from <= to;
+            iterationPredicate = () => state.current <= to;
             break;
         case from === to:
-            iterartionPredicate = () => from === to;
+            iterationPredicate = () => state.current === to;
             break;
     }
 
-    while(iterartionPredicate()) {
-        let returnValue = callback(from);
-        if(returnValue === false) {
-            return false;
+    while(iterationPredicate()) {
+        let returnValue = callback(state);
+        if(returnValue === "break") {
+            break;
         }
         iterationModifier();
     }
@@ -49,6 +59,12 @@ function forEveryNumberIn(
  * @returns {Promise<any>}
  */
 async function readInput(question: string, validation: Joi.Schema = Joi.any()): Promise<any> {
+    rlp = rlp || readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+        terminal: true
+    });
+    
     const input = await rlp.questionAsync(question);
 
     const validationResult = validation.validate(input);
